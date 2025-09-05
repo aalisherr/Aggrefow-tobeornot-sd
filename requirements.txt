@@ -1,0 +1,8 @@
+uvloop==0.20.0; platform_system != 'Windows'
+aiohttp==3.12.14
+aiosqlite==0.20.0
+python-dotenv==1.0.1
+loguru==0.7.2
+tenacity==9.0.0
+redis==5.0.1
+fakeredis==2.23.3

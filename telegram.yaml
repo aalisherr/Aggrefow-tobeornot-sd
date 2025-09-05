@@ -1,0 +1,37 @@
+bot_token: "557064K8fazdTEyQbpI"
+chat_id: -
+
+thread_mappings:
+  - thread_id: 73
+    name: "Spot Listings"
+    rules:
+#      exchanges: ["binance", "kucoin", "bybit", "okx", "mexc", "gate", "bitget", "bingx"]
+      types: ["listing_spot"]
+#
+#  - thread_id: 73
+#    name: "Futures Listings"
+#    rules:
+#      exchanges: ["binance", "kucoin", "bybit", "okx"]
+#      types: ["listing_futures"]
+
+  - thread_id: 129
+    name: "Activities & Events"
+    rules:
+      types: ["activities"]
+
+  - thread_id: 336
+    name: "Delistings"
+    rules:
+      types: ["delisting"]
+
+  - thread_id: 338
+    name: "Maintenance"
+    rules:
+      types: [ "maintenance" ]
+
+  - thread_id: 370
+    name: "News"
+    rules:
+      types: [ "news" ]
+
+default_thread: 122

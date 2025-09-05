@@ -1,0 +1,12 @@
+db_path: "announcements.db"
+poll_interval: 3
+user_agent: "Mozilla/5.0 (compatible; CryptoBot/1.0)"
+demo_mode: false
+
+redis:
+  url: "redis://localhost:6379"
+  use_fake: true  # For testing
+
+logging:
+  level: "INFO"
+  file: "logs/app.log"

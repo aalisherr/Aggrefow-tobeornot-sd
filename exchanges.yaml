@@ -1,0 +1,19 @@
+
+bithumb:
+  enabled: true
+  api_url: "https://feed.bithumb.com/_next/data/[navigation_id]/notice.json"
+  base_url: "https://feed.bithumb.com"
+  proxies:
+    - "http://oblikuc:tPzz9u@176.103.86:50100"
+  delay: 1
+  category_mappings:
+    Market Addition: "listing_spot"
+    New Service: "other"
+    Public Notice / Disclosure: "news"
+    Update: "other"
+    Event: "activities"
+    Maintenance / Inspection: "maintenance"
+    Transaction Caution: "other"
+    Delisting: "delisting"
+    Deposits & Withdrawals: "maintenance"
+    Notice / Guide: "news"

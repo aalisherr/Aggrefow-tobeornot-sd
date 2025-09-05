@@ -5,7 +5,7 @@ from app.exchanges.base import ExchangeScraper
 class BybitScraper(ExchangeScraper):
     """Bybit scraper with category-based classification"""
 
-    async def fetch_raw_data(self, proxy: Optional[str] = None) -> Any:
+    async def fetch_raw_announcements(self, proxy: Optional[str] = None) -> Any:
         payload = {"data": {"query": "", "page": 0, "hitsPerPage": 10}}
         kwargs = {'json': payload}
         if proxy:

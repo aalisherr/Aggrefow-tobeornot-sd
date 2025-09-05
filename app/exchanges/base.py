@@ -20,26 +20,34 @@ class ExchangeScraper(ABC):
             repository: AnnouncementRepository
     ):
         self.config = config
+        self.exchange_name = config.name
         self.http = http_client
         self.repo = repository
-        self._log = logger.bind(exchange=config.name)
+        self._log = logger.bind(exchange=self.exchange_name)
         self.original_category_mappings = self._get_original_category_mappings()
 
         self.url = None
         self.headers = None
 
     async def initialize(self):
-        headers = self.get_headers()
+        self.initialize_headers()
+        await self.change_proxy()
+
+        print(self.http.session.headers)
+        self.url = await self.get_api_url()
+        print(self.url)
+
+    def initialize_headers(self):
+        """Get headers"""
+        headers = self.http.DEFAULT_HEADERS
         self.http.session.headers.update(headers)
 
-        self.url = await self.get_api_url()
+    async def change_proxy(self):
+        proxy = await self.http.get_proxy_for_exchange(self.exchange_name)
+        self.http.session.proxies.update({"http": proxy, "https": proxy})
 
-    def get_headers(self):
-        """Get headers"""
-        return self.http.DEFAULT_HEADERS
-
-    async def get_actual_api_url(self, navigation_id_placeholder: str) -> str:
-        url = self.config.api_url.split('_next/')[0]
+    async def get_actual_api_url(self, raw_api_url: str, navigation_id_placeholder: str) -> str:
+        url = raw_api_url.split('_next/')[0]
         resp_text = await self.http.request("GET", url, headers=self.headers)
 
         # Look for the build ID pattern in Bithumb's Next.js structure
@@ -48,7 +56,7 @@ class ExchangeScraper(ABC):
 
         if match:
             build_id = match.group(1)
-            actual_api_url = self.config.api_url.replace(navigation_id_placeholder, build_id)
+            actual_api_url = raw_api_url.replace(navigation_id_placeholder, build_id)
             return actual_api_url
         else:
             print(f"Build ID not found in the HTML / Failed to fetch page: {resp_text[:-500]}")
@@ -56,16 +64,22 @@ class ExchangeScraper(ABC):
 
     async def get_api_url(self) -> str:
         navigation_id_placeholder = "[navigation_id]"
-        if navigation_id_placeholder in self.config.api_url:
-            return await self.get_actual_api_url(navigation_id_placeholder)
+        raw_api_url = self.config.api_url
 
-        return self.config.api_url
+        if navigation_id_placeholder in raw_api_url:
+            return await self.get_actual_api_url(raw_api_url, navigation_id_placeholder)
+
+        return raw_api_url
 
     def _get_original_category_mappings(self):
         return {k.lower(): v for k, v in self.config.category_mappings.items()}
 
+    async def fetch_raw_announcements(self) -> Any:
+        await self.change_proxy()
+        return await self.fetch_raw_data()
+
     @abstractmethod
-    async def fetch_raw_data(self, proxy: Optional[str] = None) -> Any:
+    async def fetch_raw_data(self) -> Any:
         """Fetch raw data from exchange API"""
         pass
 
@@ -98,7 +112,7 @@ class ExchangeScraper(ABC):
                 self._log.warning(f"Invalid type mapping: {category} -> {mapped_type}")
 
         # Log unmapped categories for future configuration
-        self._log.debug(f"{self.config.name} Unmapped category: {category}")
+        self._log.debug(f"{self.exchange_name} Unmapped category: {category}")
         return AnnouncementType.OTHER
 
     async def parse_announcement(self, item: Dict[str, Any]) -> Optional[Announcement]:
@@ -120,7 +134,7 @@ class ExchangeScraper(ABC):
         tickers = self.extract_tickers(title, body)
 
         return Announcement(
-            exchange=self.config.name,
+            exchange=self.exchange_name,
             source_id=source_id,
             tickers=tickers,
             title=title,
@@ -135,14 +149,13 @@ class ExchangeScraper(ABC):
     async def fetch_latest(self) -> (List[Announcement], int):
         """Main fetch method"""
         try:
-            proxy = await self.http.get_proxy_for_exchange(self.config.name)
-            raw_data = await self.fetch_raw_data(proxy=proxy)
+            raw_data = await self.fetch_raw_announcements()
 
             items = self.extract_items(raw_data)
             sorted_items = self.sort_items_by_date(items)
 
             announcements = []
-            latest_known_ms = await self.repo.get_latest_published_ms(self.config.name) or 0
+            latest_known_ms = await self.repo.get_latest_published_ms(self.exchange_name) or 0
 
             for item in sorted_items:
                 try:

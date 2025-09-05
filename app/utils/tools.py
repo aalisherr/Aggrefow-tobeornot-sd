@@ -28,3 +28,9 @@ async def random_delay(base_delay: Union[int, float], randomness_percent: float 
     actual_delay = max(actual_delay, 0.001)  # Minimum 1ms to avoid negative/zero delays
 
     await asyncio.sleep(actual_delay)
+
+def truncate_content(content: str, max_length: int = 500) -> str:
+    """Truncate long content for better error readability"""
+    if len(content) <= max_length:
+        return content
+    return content[:max_length] + f"... [truncated, total {len(content)} characters]"

@@ -35,7 +35,7 @@ __CLASSIFY_PATTERNS__ = {
 class OkxScraper(ExchangeScraper):
     """OKX scraper with category-based classification"""
 
-    async def fetch_raw_data(self, proxy: Optional[str] = None) -> Any:
+    async def fetch_raw_announcements(self, proxy: Optional[str] = None) -> Any:
         kwargs = {}
         if proxy:
             kwargs['proxy'] = proxy

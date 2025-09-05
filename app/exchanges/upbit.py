@@ -8,7 +8,7 @@ from app.models.announcement import AnnouncementType
 class UpbitScraper(ExchangeScraper):
     """Upbit scraper with direct category classification"""
 
-    async def fetch_raw_data(self, proxy: Optional[str] = None) -> Any:
+    async def fetch_raw_announcements(self, proxy: Optional[str] = None) -> Any:
         params = {
             'os': 'web',
             'page': '1',

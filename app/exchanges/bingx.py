@@ -23,7 +23,7 @@ CATEGORY_DICT = {
 class BingXScraper(ExchangeScraper):
     """BingX scraper with category-based classification"""
 
-    async def fetch_raw_data(self, proxy: Optional[str] = None) -> Any:
+    async def fetch_raw_announcements(self, proxy: Optional[str] = None) -> Any:
         headers = {
             'app_version': '5.1.15',
             'device_id': 'b7ccd3a2b10a4c0c819898c3c5c013d6',

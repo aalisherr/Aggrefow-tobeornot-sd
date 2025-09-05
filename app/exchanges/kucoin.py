@@ -5,7 +5,7 @@ from app.exchanges.base import ExchangeScraper
 class KuCoinScraper(ExchangeScraper):
     """KuCoin scraper with category-based classification"""
     
-    async def fetch_raw_data(self, proxy: Optional[str] = None) -> Any:
+    async def fetch_raw_announcements(self, proxy: Optional[str] = None) -> Any:
         params = {'page': '1', 'pageSize': '1'}
         kwargs = {'params': params}
         if proxy:

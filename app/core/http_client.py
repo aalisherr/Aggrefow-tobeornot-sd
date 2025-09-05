@@ -1,10 +1,13 @@
 import json
 import asyncio
 from typing import Optional, Any, Dict
+
+import aiohttp
 from tenacity import retry, stop_after_attempt, wait_exponential
 from loguru import logger
 from curl_cffi.requests import AsyncSession
 from app.core.proxy_manager import ExchangeProxyManager
+from app.utils.tools import truncate_content
 
 
 class HttpClient:
@@ -38,14 +41,30 @@ class HttpClient:
         reraise=True,
     )
     async def request(self, method: str, url: str, **kwargs) -> str:
-        # Handle proxy if provided in kwargs
-        proxy = kwargs.pop('proxy', None)
-        if proxy:
+        if proxy := kwargs.pop('proxy', None):
             kwargs['proxies'] = {'http': proxy, 'https': proxy}
 
-        response = await self.session.request(method, url, **kwargs)
-        response.raise_for_status()
-        return response.text
+        try:
+            response = await self.session.request(method, url, **kwargs)
+            resp_msg = response.text
+
+            if response.status_code >= 400:
+                truncated = truncate_content(resp_msg)
+
+                # Log detailed error information
+                logger.error(
+                    f"HTTP Error {response.status_code} for {url}\n"
+                    f"Headers: {dict(response.headers)}\n"
+                    f"Error preview: {truncated}"
+                )
+
+                response.raise_for_status()
+
+            return resp_msg
+
+        except aiohttp.ClientError as e:
+            logger.error(f"Request failed for {url}: {type(e).__name__}: {str(e)}")
+            raise
 
     async def request_json(self, method: str, url: str, **kwargs) -> Any:
         resp = await self.request(method, url, **kwargs)

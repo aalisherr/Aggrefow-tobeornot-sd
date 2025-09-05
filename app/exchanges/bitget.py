@@ -52,14 +52,9 @@ CATEGORY_DICT = {
 class BitgetScraper(ExchangeScraper):
     """Bitget scraper with category-based classification"""
 
-    async def fetch_raw_data(self, proxy: Optional[str] = None) -> Any:
-        kwargs = {}
-        if proxy:
-            kwargs['proxy'] = proxy
-
+    async def fetch_raw_data(self) -> Any:
         return await self.http.get(
-            self.url,
-            **kwargs
+            self.url
         )
 
     def extract_items(self, raw_data: Any) -> List[Dict]:

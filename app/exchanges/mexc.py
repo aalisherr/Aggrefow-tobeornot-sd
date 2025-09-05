@@ -19,7 +19,7 @@ __CLASSIFY_PATTERNS__ = {
 class MexcScraper(ExchangeScraper):
     """MEXC scraper with category-based classification"""
 
-    async def fetch_raw_data(self, proxy: Optional[str] = None) -> Any:
+    async def fetch_raw_announcements(self, proxy: Optional[str] = None) -> Any:
         params = {
             'page': '1',
             'perPage': '3',  # Fetch more items per request

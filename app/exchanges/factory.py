@@ -17,15 +17,15 @@ class ExchangeFactory:
     """Factory for creating exchange scrapers"""
 
     _registry: Dict[str, Type[ExchangeScraper]] = {
-        'binance': BinanceScraper,
-        'bybit': BybitScraper,
-        'kucoin': KuCoinScraper,
-        'okx': OkxScraper,
-        'mexc': MexcScraper,
-        'gate': GateScraper,
-        'bitget': BitgetScraper,
-        "bingx": BingXScraper,
-        "upbit": UpbitScraper,
+        # 'binance': BinanceScraper,
+        # 'bybit': BybitScraper,
+        # 'kucoin': KuCoinScraper,
+        # 'okx': OkxScraper,
+        # 'mexc': MexcScraper,
+        # 'gate': GateScraper,
+        # 'bitget': BitgetScraper,
+        # "bingx": BingXScraper,
+        # "upbit": UpbitScraper,
         "bithumb": BithumbScraper,
     }
 

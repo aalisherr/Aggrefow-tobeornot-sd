@@ -22,20 +22,15 @@ CATEGORY_DICT = {
 class BithumbScraper(ExchangeScraper):
     """Bithumb scraper with category-based classification"""
 
-    async def fetch_raw_data(self, proxy: Optional[str] = None) -> Any:
+    async def fetch_raw_data(self) -> Any:
         params = {
             'category': '',
             'page': '1',
         }
-        kwargs = {
-            'params': params
-        }
-        if proxy:
-            kwargs['proxy'] = proxy
 
         return await self.http.get(
             self.url,
-            **kwargs
+            params=params,
         )
 
     def extract_items(self, raw_data: Any) -> List[Dict]:

@@ -5,7 +5,7 @@ from app.exchanges.base import ExchangeScraper
 class BinanceScraper(ExchangeScraper):
     """Binance scraper with category-based classification"""
 
-    async def fetch_raw_data(self, proxy: Optional[str] = None) -> Any:
+    async def fetch_raw_announcements(self, proxy: Optional[str] = None) -> Any:
         params = {
             'type': '1',
             'pageNo': '1',

@@ -1,0 +1,46 @@
+okx:
+  enabled: true
+
+  request:
+    api_url: 'https://www.okx.com/help/category/announcements'
+    method: get
+    header_profile: browser_chrome
+    proxy_pool: proxyseller_isp
+    rate_limit_profile: strict
+    headers_override: {}
+    kwargs: {}
+
+  monitoring:
+    poll_interval: 3
+    navigation_id_refresh: 3600
+
+  patterns: [
+    'OKX (?:will launch|to list) ([A-Z0-9]+)/USD[ⒸⓈ]?',
+    'OKX to (?:list|delist) ([A-Z0-9]+) \(',
+    'OKX to (?:list|delist) (?:perpetual futures for|perpetual for) ([A-Z0-9]+) crypto',
+    'OKX to (?:list|delist) pre-market perpetual futures for ([A-Z0-9]+) \(',
+    'OKX to support ([A-Z0-9]+)(?:\d+)?',
+    'OKX to adjust tick size of ([A-Z0-9]+)',
+    'OKX to upgrade ([A-Z0-9]+) spot trading',
+    'OKX completed ([A-Z0-9]+) token migration',
+    '([A-Z0-9]+) \([A-Za-z0-9]+\) listing'
+  ]
+
+  categories:
+    - original_ids: ['New listings']
+      show_name: 'New Listings'
+      internal_name: 'listing_spot'
+      title_regex: '(?i)(OKX to list (?:pre-market )?perpetual futures for|OKX to list.*for spot trading|OKX to enable margin trading|OKX to list perpetual for)'
+    - original_ids: ['Delistings']
+      show_name: 'Delistings'
+      internal_name: 'delisting'
+      title_regex: '(?i)(OKX to delist|delist)'
+    - original_ids: ['Trading updates', 'P2P trading', 'Others']
+      show_name: 'Other'
+      internal_name: 'other'
+    - original_ids: ['Deposit/withdrawal suspension', 'API']
+      show_name: 'Maintenance'
+      internal_name: 'maintenance'
+    - original_ids: ['Web3', 'Earn', 'Jumpstart', 'OKB burn']
+      show_name: 'Activities'
+      internal_name: 'activities'

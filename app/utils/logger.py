@@ -16,14 +16,15 @@ def setup_logging():
     """Configure structured logging"""
 
     def format_with_component(record):
-        component = record["extra"].get("component", "unknown")
-        # Sanitize the message (only escape formatting chars)
-        safe_message = safe_log_text(record["message"])
+        if log_data := record['extra'].get('exchange', '').capitalize():
+            log_data += " "
 
-        if record["extra"].get("summary", False):
-            return f"<green>{record['time']:HH:mm:ss}</green> | {safe_message}\n"
-        else:
-            return f"<green>{record['time']:HH:mm:ss}</green> | <level>{record['level']: <8}</level> | <cyan>{component}</cyan> | <level>{safe_message}</level>\n"
+        log_data += safe_log_text(record["message"]) #record['extra'].get('component', ''):
+
+        # # Sanitize the message (only escape formatting chars)
+        # safe_message = safe_log_text(record["message"])
+
+        return f"<green>{record['time']:HH:mm:ss}</green> | {log_data}\n"
 
     # Create logs directory
     Path("logs").mkdir(exist_ok=True)

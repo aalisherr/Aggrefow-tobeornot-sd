@@ -1,0 +1,57 @@
+bitget:
+  enabled: true
+
+  request:
+    api_url: "https://www.bitget.com/support/_next/data/{navigation_id}/en/support/categories/360002621832.json"
+    header_profile: browser_chrome
+    proxy_pool: proxyseller_isp
+    rate_limit_profile: strict
+    headers_override: {}
+    kwargs: {}
+
+  monitoring:
+    poll_interval: 5
+    navigation_id_refresh: 3600
+
+#  patterns: [
+#    'Bitget Will List ([ A-Z0-9 ]+) \(',
+#    '([ A-Z0-9 ]+) \([ A-Z0-9 ]+\) (?:to be listed|will be listed)',
+#    '([ A-Z0-9 ]+)USDT now launched',
+#    '([ A-Z0-9 ]+)PERP now launched',
+#    'convert ([ A-Z0-9 ]+)USDT perpetual',
+#    'Bitget (?:to )?delist ([ A-Z0-9 ]+)USDT',
+#    'Delisting ([ A-Z0-9 ]+) Spot',
+#    'Will Delist ([ A-Z0-9 ]+) on'
+#  ]
+
+  categories:
+    - original_ids: ["Announcements", "Bitget news"]
+      show_name: "Latest news"
+      internal_name: "news"
+    - original_ids: ["New listings", "Spot", "Futures", "Margin", "Copy Trading", "Bots"]
+      show_name: "New listings"
+      internal_name: "listing_spot"
+    - original_ids: ["Competitions and promotions", "Ongoing competitions and promotions", "Previous competitions & events", "Reward Distribution", "KCGI", "VIP campaigns"]
+      show_name: "Competitions and promotions"
+      internal_name: "activities"
+    - original_ids: ["Product updates", "Unified trading account", "Spot", "Futures", "Margin", "Copy trading", "Bots", "Earn", "Crypto Loan", "Bitget Swap"]
+      show_name: "Product updates"
+      internal_name: "other"
+    - original_ids: ["Security", "Security Information"]
+      show_name: "Security"
+      internal_name: "maintenance"
+    - original_ids: ["API trading", "API Announcement"]
+      show_name: "API trading"
+      internal_name: "maintenance"
+    - original_ids: ["Delisting information", "Trading pair delisting"]
+      show_name: "Delisting information"
+      internal_name: "delisting"
+    - original_ids: ["Fiat", "Credit/debit card", "P2P trading", "Bank deposit", "Cash conversion", "Third-party"]
+      show_name: "Fiat"
+      internal_name: "other"
+    - original_ids: ["Maintenance or system updates", "Asset maintenance", "Spot Maintenance", "System Updates", "Futures Maintenance"]
+      show_name: "Maintenance or system updates"
+      internal_name: "maintenance"
+    - original_ids: ["Other"]
+      show_name: "Other"
+      internal_name: "other"

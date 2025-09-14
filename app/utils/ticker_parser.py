@@ -1,87 +1,122 @@
-"""app/utils/ticker_parser.py"""
 import re
 from typing import List, Set
 
 
 class TickerParser:
-    """Advanced ticker extraction with multi-ticker support"""
+    """Advanced ticker extraction with multi-ticker support and universal fallback"""
 
-    # Separators used in announcements
-    SEPARATORS = [
-        ',', '、', ' and ', ' And ', ' AND ', '/', '／', '&', ' & ',
-        ', ', '，', ' + ', '+', ' | ', '|'
-    ]
+    # Class-level constants
+    SECOND_PAIR_TOKENS = ['USDT', 'USDC', 'FUSDT', 'BTC', 'ETH', 'BNB', 'USD1']  # Added USD1
 
-    # Common false positives to filter out
     BLACKLIST = {
-        'AND', 'OR', 'THE', 'ON', 'WILL', 'LAUNCH', 'USDT', 'USD',
-        'MARGIN', 'MARGINED', 'SPOT', 'FUTURES', 'PERPETUAL', 'CONTRACT',
-        'TRADING', 'BOTS', 'USDⓈ', 'COIN', 'TOKEN', 'NEW', 'LISTING',
-        'LIST', 'LISTS', 'ALPHA', 'BETA', 'PERP', 'MARGINED'
+        # Second pair tokens
+        'USDT', 'USDC', 'FUSDT', 'BTC', 'ETH', 'BNB', 'USD1',  # Added USD1
+        # Common terms and exchanges
+        'USD', 'APR', 'UTC', 'AI', 'WEB', 'KRW',
+        'MEXC', 'BINGX', 'BITHUMB', 'UPBIT', 'GATE', 'BITGET', 'HTX',
+        'BINANCE', 'KUCOIN', 'OKX', 'BYBIT', 'KRAKEN', 'BITSTAMP', 'BITFINEX',
+        'COINBASE', 'LBANK', 'POLONIEX', 'BITMEX', 'HUOBI', 'COINLIST',
+        # Single letters that often appear in regular text (removed common single letters)
+        # Keep only clearly non-ticker single letters
+
     }
 
+    # Default patterns for universal extraction
+    DEFAULT_PATTERNS = [
+        # Tickers in parentheses: "Name (TICKER)"
+        r'\(\s*([A-Z0-9][A-Z0-9]{0,11})\s*\)',
+        # Trading pairs: "LEVERUSDT", "HEMIUSDTM"
+        r'\b([A-Z0-9][A-Z0-9]{1,14})(?:USDT|USDC|BTC|ETH|BNB|USD1)(?:M)?\b',
+        # Before trading pair suffix (extracts base ticker)
+        r'\b([A-Z0-9][A-Z0-9]{0,11})(?=(?:USDT|USDC|BTC|ETH|BNB|USD1))',
+        # Tickers in lists: "LEVER, HEMI & TOKEN"
+        r'(?:^|[\s,&/])([A-Z0-9][A-Z0-9]{0,11})(?=[\s,&/)]|$)',
+        # Standalone all-caps words (including single letters and numbers)
+        r'(?:^|\s)([A-Z0-9][A-Z0-9]{0,11})(?=\s|$)',
+    ]
+
     @classmethod
-    def extract_tickers(cls, title: str, body: str = "") -> List[str]:
-        """Extract all tickers from announcement text"""
+    def extract_tickers(cls, title: str, body: str = "", patterns: List[str] = None) -> List[str]:
+        """
+        Extract tickers from text using provided patterns or default universal patterns.
+
+        Args:
+            title: Title text to search
+            body: Additional body text to search
+            patterns: Optional list of regex patterns. If None, uses DEFAULT_PATTERNS
+
+        Returns:
+            Sorted list of unique tickers found
+        """
         text = f"{title} {body or ''}"
-        tickers = set()
 
-        # Pattern 1: Tickers in parentheses (BTC), (ETH), (Q)
-        pattern1 = r'\(([A-Z0-9]{1,15})\)'
-        for match in re.finditer(pattern1, text):
-            ticker = match.group(1).upper()
-            if ticker not in cls.BLACKLIST and len(ticker) >= 1:
-                tickers.add(ticker)
+        text = re.sub(r'([A-Z0-9]+), ([A-Z0-9]+) and ([A-Z0-9]+)', r'\1, \2, \3,', text) # Replace "PLTR, NFLX and MSTR " with "PLTR, NFLX, MSTR, "
+        # print(patterns, text)
+        # print(text)
+        # Use provided patterns or default ones
+        patterns_to_use = patterns if patterns else cls.DEFAULT_PATTERNS
+        # patterns_to_use = ['(\\b[A-Z0-9]+\\b)']
+        # print("patterns_to_use", patterns_to_use)
+        all_tickers = set()
 
-        # Pattern 2: XXXUSDT patterns - extract only the base ticker
-        pattern2 = r'\b([A-Z0-9]{2,15})USDT[M]?\b'
-        for match in re.finditer(pattern2, text, re.IGNORECASE):
-            ticker = match.group(1).upper()
-            if ticker not in cls.BLACKLIST and len(ticker) >= 2:
-                tickers.add(ticker)
+        for pattern in patterns_to_use:
+            matches = re.findall(pattern, text)
+            for match in matches:
+                if isinstance(match, tuple):
+                    # Handle multiple capture groups
+                    for group in match:
+                        if group:
+                            # Extract alphanumeric uppercase sequences
+                            tickers = cls._extract_valid_tickers(group)
+                            all_tickers.update(tickers)
+                elif isinstance(match, str):
+                    tickers = cls._extract_valid_tickers(match)
+                    all_tickers.update(tickers)
 
-        # Pattern 3: Slash pairs XXX/USDT, XXX／USDT - extract only base ticker
-        pattern3 = r'\b([A-Z0-9]{2,15})[/／](?:USDT|USD)\b'
-        for match in re.finditer(pattern3, text, re.IGNORECASE):
-            ticker = match.group(1).upper()
-            if ticker not in cls.BLACKLIST and len(ticker) >= 2:
-                tickers.add(ticker)
+        # Apply filtering and cleanup
+        filtered_tickers = cls._filter_tickers(all_tickers)
 
-        # Pattern 4: "will list XXX" or "listing XXX"
-        pattern4 = r'\b(?:will list|listing|lists?|launch|add(?:ing)?|support(?:ing)?)\s+([A-Z0-9]{2,15})\b'
-        for match in re.finditer(pattern4, text, re.IGNORECASE):
-            ticker = match.group(1).upper()
-            if ticker not in cls.BLACKLIST and len(ticker) >= 2:
-                tickers.add(ticker)
+        return sorted(list(filtered_tickers))
 
-        # Pattern 5: Multiple tickers with ampersand or "and"
-        pattern5 = r'\b([A-Z0-9]{2,8})\s*(?:&|and|And|AND)\s*([A-Z0-9]{2,8})\b'
-        for match in re.finditer(pattern5, text):
-            t1, t2 = match.group(1).upper(), match.group(2).upper()
-            if t1 not in cls.BLACKLIST:
-                tickers.add(t1)
-            if t2 not in cls.BLACKLIST:
-                tickers.add(t2)
+    @classmethod
+    def _extract_valid_tickers(cls, text: str) -> Set[str]:
+        """
+        Extract valid ticker symbols from text.
+        Only matches sequences that are ALL uppercase (not just starting with uppercase).
+        Now allows single character tickers and numeric sequences.
+        """
+        # Match sequences that are entirely uppercase letters and numbers
+        # Can start with letter or number, minimum 1 character
+        pattern = r'\b([A-Z0-9]+)\b'
+        matches = re.findall(pattern, text)
 
-        # Pattern 6: Tickers mentioned after specific verbs
-        pattern6 = r'\b(?:list(?:ed|ing)?|launch(?:ed|ing)?|add(?:ed|ing)?|support(?:ed|ing)?)\s+([A-Z0-9]{2,15})(?:\s+|$|,)'
-        for match in re.finditer(pattern6, text, re.IGNORECASE):
-            ticker = match.group(1).upper()
-            if ticker not in cls.BLACKLIST and len(ticker) >= 2:
-                tickers.add(ticker)
+        valid_tickers = set()
+        for match in matches:
+            # Check if the match is actually all uppercase in the original text
+            # This prevents matching "Mar" as "M"
+            if match == match.upper() and len(match) <= 12:
+                valid_tickers.add(match)
+        # print("valid_tickers", valid_tickers)
+        return valid_tickers
 
-        # Clean up: Remove any tickers that contain "USDT" or other blacklisted substrings
-        filtered_tickers = set()
-        for ticker in tickers:
-            # Skip if ticker contains any blacklisted substring
-            if any(blacklisted in ticker for blacklisted in cls.BLACKLIST):
-                continue
-            # Skip if ticker ends with USDT-related patterns
-            if ticker.endswith(('USDT', 'USD', 'PERP', 'MARGIN')):
-                continue
-            filtered_tickers.add(ticker)
+    @classmethod
+    def _filter_tickers(cls, tickers: Set[str]) -> Set[str]:
+        """
+        Filter out invalid tickers, blacklisted terms, and clean up trading pair suffixes.
+        """
+        # Remove pure digits (but allow alphanumeric like "10000WHY")
+        filtered = {t for t in tickers if not t.isdigit()}
 
-        # Sort and limit
-        result = sorted(list(filtered_tickers))
-        return result[:10]  # Limit to 10 tickers max
+        # Remove blacklisted terms
+        filtered = {t for t in filtered if t not in cls.BLACKLIST}
 
+        # Remove trading pair suffixes
+        suffix_pattern = f'({"|".join(cls.SECOND_PAIR_TOKENS)})$'
+        cleaned = set()
+        for ticker in filtered:
+            # Remove suffix if present
+            cleaned_ticker = re.sub(suffix_pattern, '', ticker)
+            if cleaned_ticker and cleaned_ticker not in cls.BLACKLIST:
+                cleaned.add(cleaned_ticker)
+
+        return cleaned

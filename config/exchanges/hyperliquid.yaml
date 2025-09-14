@@ -1,0 +1,30 @@
+hyperliquid:
+  enabled: true
+
+  request:
+    api_url: 'https://dzjnlsk4rxci0.cloudfront.net/mainnet/entries.json'
+    header_profile: browser_chrome
+    proxy_pool: proxyseller_isp
+    rate_limit_profile: strict
+    headers_override: {}
+
+  monitoring:
+    poll_interval: 3
+    navigation_id_refresh: 3600
+    
+  patterns: [
+    '(\b[A-Z0-9]+\b)',  # detect only uppercase words
+    'New listing: ([A-Z0-9]+)-USD hyperps',
+    ' ([A-Z0-9]+),'
+  ]
+
+  categories:
+    - original_ids: ['Listings']
+      show_name: 'New Listings'
+      internal_name: 'listing_spot'
+    - original_ids: [ 'Delistings' ]
+      show_name: 'Delisting'
+      internal_name: 'delisting'
+    - original_ids: ['Updates']
+      show_name: 'Updates'
+      internal_name: 'other'

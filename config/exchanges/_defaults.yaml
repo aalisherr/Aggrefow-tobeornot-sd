@@ -1,0 +1,12 @@
+defaults:
+  enabled: false
+  base_url: ""
+  request:
+    header_profile: basic
+    proxy_pool: proxyseller_isp
+    rate_limit_profile: moderate
+    headers_override: {}
+    kwargs: {}
+  monitoring:
+    poll_interval: 3
+  categories: []

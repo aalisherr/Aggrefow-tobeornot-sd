@@ -1,0 +1,88 @@
+gate:
+  enabled: true
+
+  request:
+    api_url: "https://www.gate.io/announcements/_next/data/{navigation_id}/en/announcements/lastest.json"
+    header_profile: browser_chrome
+    proxy_pool: proxyseller_isp
+    rate_limit_profile: strict
+    headers_override: {}
+    kwargs:
+      params:
+        category: 'lastest'
+
+  monitoring:
+    poll_interval: 5
+    navigation_id_refresh: 3600
+
+  patterns: [
+    'Gate to List ([A-Z0-9]+) \(',
+    'Gate (?:Lists|to List) ([A-Z0-9]+) (?:Perpetual|for Spot)',
+    'Gate (?:to Support|Lists) ([A-Z0-9]+(?:,\s*[A-Z0-9]+)*) fo',
+    '([A-Z0-9]+) \([A-Z0-9]+\)\. Stake',
+    'Gate (?:Will )?Delist ([A-Z0-9]+(?:,\s*[A-Z0-9]+)*)',
+    'Gate Delisting the ([A-Z0-9]+) \(',
+    'Including ([A-Z0-9]+(?:,\s*[A-Z0-9]+)*) and',
+    ]
+
+  categories:
+    - original_ids: [0]
+      show_name: "Announcements"
+      internal_name: "othe"
+    - original_ids: [11, 32, 33, 34, 35, 36, 69]
+      show_name: "Activities"
+      internal_name: "activities"
+    - original_ids: [29]
+      show_name: "Brand Milestones"
+      internal_name: "activities"
+    - original_ids: [28]
+      show_name: "Alpha"
+      internal_name: "activities"
+    - original_ids: [3]
+      show_name: "Bi-Weekly Reports"
+      internal_name: "other"
+    - original_ids: [5]
+      show_name: "Gate Research"
+      internal_name: "other"
+    - original_ids: [9]
+      show_name: "Gate Charity"
+      internal_name: "other"
+    - original_ids: [30]
+      show_name: "Gate Wallet"
+      internal_name: "other"
+    - original_ids: [7, 61, 38, 37, 39, 40]
+      show_name: "New Crypto Listings"
+      internal_name: "listing_spot"
+    - original_ids: [15]
+      show_name: "Delistings"
+      internal_name: "delisting"
+    - original_ids: [65]
+      show_name: "VIP Services"
+      internal_name: "other"
+    - original_ids: [66, 68, 67]
+      show_name: "Institutional Services"
+      internal_name: "other"
+    - original_ids: [10, 62, 43, 44, 45, 46, 47, 48, 49, 50]
+      show_name: "Earn"
+      internal_name: "activities"
+    - original_ids: [31]
+      show_name: "Options"
+      internal_name: "other"
+    - original_ids: [12]
+      show_name: "Gate Live"
+      internal_name: "activities"
+    - original_ids: [25]
+      show_name: "GT"
+      internal_name: "activities"
+    - original_ids: [53, 55, 54]
+      show_name: "Fees & Precision"
+      internal_name: "other"
+    - original_ids: [27]
+      show_name: "API Updates"
+      internal_name: "maintenance"
+    - original_ids: [56, 57, 58, 59, 60]
+      show_name: "Maintenance / Updates"
+      internal_name: "maintenance"
+    - original_ids: [1]
+      show_name: "Other"
+      internal_name: "other"

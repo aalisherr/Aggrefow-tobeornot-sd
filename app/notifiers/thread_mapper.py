@@ -1,7 +1,7 @@
 """app/notifiers/thread_mapper.py"""
 import json
 from typing import Dict, Optional, List
-from app.models.announcement import Announcement, AnnouncementType
+from app.core.models import Announcement
 
 
 class ThreadMapper:
@@ -63,7 +63,7 @@ class ThreadMapper:
             # Check category match (if specified)
             categories = rules.get("categories", [])
             if categories:
-                ann_cats = [c.lower() for c in ann.categories]
+                ann_cats = [c.lower() for c in ann.category]
                 if not any(cat.lower() in ann_cats for cat in categories):
                     continue
 

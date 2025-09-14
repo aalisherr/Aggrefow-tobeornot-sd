@@ -1,0 +1,60 @@
+bingx:
+  enabled: true
+
+  request:
+    api_url: "https://api-app.we-api.com/api/customer/v1/announcement/listArticles"
+    method: get
+    header_profile:
+    proxy_pool: proxyseller_isp
+    rate_limit_profile: strict
+    kwargs:
+      params:
+        sectionId: '360004917494'
+        page: '1'
+        pageSize: '20'
+
+  monitoring:
+    poll_interval: 5
+    navigation_id_refresh: 3600
+
+  patterns: [
+    '[A-Z0-9]+ \(([A-Z0-9 ]+)\)',
+    'BingX (?:Will )?Delist ([ A-Z0-9 ]+(?:,\s*[ A-Z0-9 ]+)*) From',
+    'BingX Delists ([ A-Z0-9 ]+)USDT',
+    'Trading: ([ A-Z0-9 ]+) \('
+  ]
+
+  categories:
+    - original_ids: [360004917494]
+      show_name: "Latest Announcements"
+      internal_name: "news"
+    - original_ids: [11257060320143]
+      show_name: "Latest Promotions"
+      internal_name: "activities"
+    - original_ids: [11256997796495]
+      show_name: "Product Updates"
+      internal_name: "other"
+    - original_ids: [11257016265487]
+      show_name: "Asset Maintenance"
+      internal_name: "maintenance"
+    - original_ids: [11523620946319]
+      show_name: "System Maintenance"
+      internal_name: "maintenance"
+    - original_ids: [11257060005007]
+      show_name: "Spot Listing"
+      internal_name: "listing_spot"
+    - original_ids: [11257015822991]
+      show_name: "Futures Listing"
+      internal_name: "listing_spot"
+    - original_ids: [13117025062927]
+      show_name: "Innovation Listing"
+      internal_name: "listing_spot"
+    - original_ids: [11257028004239]
+      show_name: "Funding Rate"
+      internal_name: "other"
+    - original_ids: [11257015847311]
+      show_name: "Delisting"
+      internal_name: "delisting"
+    - original_ids: [11257028024847]
+      show_name: "Crypto Scout"
+      internal_name: "other"

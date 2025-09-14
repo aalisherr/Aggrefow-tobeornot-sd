@@ -1,6 +1,6 @@
 import asyncio
 from loguru import logger
-from app.config.loader import AppConfig
+from app.db.config.loader import AppConfig
 from app.utils.logger import setup_logging
 from app.orchestrator import Orchestrator
 
@@ -11,7 +11,7 @@ async def main():
     logger.info("🚀 Starting Crypto Announcements Aggregator V2")
 
     # Load configuration from YAML files
-    config = AppConfig.load("config")
+    config = AppConfig.load("config/")
 
     # Create and run orchestrator
     orchestrator = Orchestrator(config)
@@ -27,3 +27,11 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+    # TODO: catch http and handle errors
+    # raise HTTPError(f"HTTP Error {self.status_code}: {self.reason}", 0, self)
+    # curl_cffi.requests.exceptions.HTTPError: HTTP Error 429:
+    # binance scraping update to get token wsaf cookies
+    # ticker parser change for every exchange and default
+    # add extra exchanges
+    # source exchanges, twitter, ccxt

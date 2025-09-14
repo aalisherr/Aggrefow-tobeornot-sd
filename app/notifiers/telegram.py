@@ -44,9 +44,11 @@ class TelegramNotifier:
 
         url = f"https://api.telegram.org/bot{self._token}/sendMessage"
 
+        data = ""
         try:
             async with self._session.post(url, json=payload) as resp:
                 data = await resp.json(content_type=None)
+                # print(data)
                 success = resp.status == 200 and data.get("ok")
                 if success:
                     self._log.debug("Message sent successfully", exchange=exchange)
@@ -58,5 +60,5 @@ class TelegramNotifier:
                     )
                 return success
         except Exception as e:
-            self._log.error(f"Send error: {e}", exchange=exchange)
+            self._log.error(f"Send error: {e} | {data}", exchange=exchange)
             return False

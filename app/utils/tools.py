@@ -1,6 +1,8 @@
 import asyncio
+import json
 import random
 from typing import Union
+from urllib.parse import urlparse
 
 
 async def random_delay(base_delay: Union[int, float], randomness_percent: float = 10.0) -> None:
@@ -34,3 +36,9 @@ def truncate_content(content: str, max_length: int = 500) -> str:
     if len(content) <= max_length:
         return content
     return content[:max_length] + f"... [truncated, total {len(content)} characters]"
+
+def get_json_if_valid(json_str: str) -> str:
+    try:
+        return json.loads(json_str)
+    except Exception:
+        return json_str

@@ -14,6 +14,12 @@ class ExchangeProxyManager:
         if proxies:
             self._rotators[exchange] = ProxyRotator(proxies)
 
+    def register_from_config(self, exchange_configs: Dict):
+        """Register proxies from exchange configs"""
+        for name, config in exchange_configs.items():
+            if config.enabled and config.proxies:
+                self.register_exchange(name, config.proxies)
+
     async def get_proxy(self, exchange: str) -> Optional[str]:
         """Get next proxy for exchange"""
         rotator = self._rotators.get(exchange)
@@ -36,3 +42,9 @@ class ProxyRotator:
             proxy = self._proxies[self._index]
             self._index = (self._index + 1) % len(self._proxies)
             return proxy
+
+    def get_current_proxy(self) -> Optional[str]:
+        """Get current proxy without rotating"""
+        if not self._proxies:
+            return None
+        return self._proxies[self._index % len(self._proxies)]

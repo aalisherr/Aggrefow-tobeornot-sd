@@ -1,0 +1,67 @@
+mexc:
+  enabled: true
+
+  request:
+    api_url: "https://www.mexc.com/help/announce/api/v2/section/article/list"
+    method: post
+    header_profile: browser_chrome
+    proxy_pool: proxyseller_isp
+    rate_limit_profile: strict
+    headers_override: {}
+    kwargs:
+      json:
+        page: '1'
+        pageSize: '3'
+        langIso: 'en-US'
+        bizType: '10'
+        activityState:
+
+  monitoring:
+    poll_interval: 3
+    navigation_id_refresh: 3600
+
+  patterns: [
+    'MEXC Will List ([A-Z0-9]+) \(',
+    '([A-Z0-9]+) \([A-Z0-9]+\) USDT-M Futures',
+    '([A-Z0-9]+) Now Live on',
+    '([A-Z0-9]+) is Coming Soon',
+    '([A-Z0-9]+) Trading Closure',
+    'Delisting of ([A-Z0-9]+(?:,\s*[A-Z0-9]+)*)',
+    'Will (?:not Support|Delist) ([A-Z0-9]+)',
+    'to ([A-Z0-9]+)USDT',
+    'Distribution for ([A-Z0-9]+)',
+    'Listing] ([A-Z0-9]+)USDT',
+    ' ([A-Z0-9]+),'
+  ]
+
+  categories:
+    - original_ids: [15425930840825]
+      show_name: "Latest Events"
+      internal_name: "activities"
+    - original_ids: [15425930840821]
+      show_name: "New Listings"
+      internal_name: "listing_spot"
+    - original_ids: [15425930840822]
+      show_name: "Delistings"
+      internal_name: "delisting"
+    - original_ids: [15425930840819]
+      show_name: "MX Zone"
+      internal_name: "activities"
+    - original_ids: [15425930840828]
+      show_name: "Partnerships"
+      internal_name: "other"
+    - original_ids: [15425930840826]
+      show_name: "Maintenance Updates"
+      internal_name: "maintenance"
+    - original_ids: [15425930840820]
+      show_name: "API Updates"
+      internal_name: "other"
+    - original_ids: [15425930840823]
+      show_name: "Trading Updates"
+      internal_name: "other"
+    - original_ids: [15425930840827]
+      show_name: "Product Updates"
+      internal_name: "other"
+    - original_ids: [15425930840824]
+      show_name: "Others"
+      internal_name: "other"

@@ -1,0 +1,14 @@
+# CCXT exchange configurations
+exchanges:
+  binance:
+    enabled: true
+    api_key_env: "BINANCE_API_KEY"
+    api_secret_env: "BINANCE_API_SECRET"
+    options:
+      defaultType: "spot"
+      adjustForTimeDifference: true
+
+  kraken:
+    enabled: false
+    api_key_env: "KRAKEN_API_KEY"
+    api_secret_env: "KRAKEN_API_SECRET"

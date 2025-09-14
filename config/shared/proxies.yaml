@@ -1,0 +1,34 @@
+# Proxy pools configuration
+pools:
+  proxyseller_isp:
+    type: "rotating"
+    proxies:
+      - "http://oblikovuizapuc:tPzz9uYjta@158.46.163.152:50100"
+
+  static_backup:
+    type: "static"
+    proxies:
+      - "http://backup:pass@proxy.example.com:8080"
+
+  webshare_datacenter1:
+    type: "static"
+    proxies:
+      - "http://vsioosoz:6j80wk0dmeef@198.23.239.134:6540"
+
+  webshare_datacenter:
+    type: "static"
+    proxies:
+      - "http://vsioosoz:6j80wk0dmeef@198.23.239.134:6540"
+      - "http://vsioosoz:6j80wk0dmeef@45.38.107.97:6014"
+      - "http://vsioosoz:6j80wk0dmeef@107.172.163.27:6543"
+      - "http://vsioosoz:6j80wk0dmeef@64.137.96.74:6641"
+      - "http://vsioosoz:6j80wk0dmeef@45.43.186.39:6257"
+      - "http://vsioosoz:6j80wk0dmeef@154.203.43.247:5536"
+      - "http://vsioosoz:6j80wk0dmeef@84.247.60.125:6095"
+      - "http://vsioosoz:6j80wk0dmeef@216.10.27.159:6837"
+      - "http://vsioosoz:6j80wk0dmeef@136.0.207.84:6661"
+      - "http://vsioosoz:6j80wk0dmeef@142.147.128.93:6593"
+
+  none:
+    type: "direct"
+    proxies: []

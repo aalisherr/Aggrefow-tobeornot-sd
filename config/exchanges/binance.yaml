@@ -1,0 +1,70 @@
+binance:
+  enabled: true
+
+  request:
+    api_url: "https://www.binance.com/en/support/announcement/list/48"
+    header_profile: browser_chrome
+    proxy_pool: none
+    rate_limit_profile: strict
+    headers_override:
+      accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8'
+      accept-language: 'en-US,en;q=0.5'
+      cache-control: 'no-cache'
+      pragma: 'no-cache'
+      priority: 'u=0, i'
+      sec-ch-ua: '"Chromium";v="136", "Brave";v="136", "Not.A/Brand";v="99"'
+      sec-ch-ua-mobile: '?0'
+      sec-ch-ua-platform: '"Windows"'
+      sec-fetch-dest: 'document'
+      sec-fetch-mode: 'navigate'
+      sec-fetch-site: 'none'
+      sec-fetch-user: '?1'
+      sec-gpc: '1'
+      upgrade-insecure-requests: '1'
+
+  monitoring:
+    poll_interval: 3
+    navigation_id_refresh: 3600
+
+  patterns: [
+    # Pattern for "Binance Will Add X (TICKER)"
+    'Binance Will Add [^(]+\(([A-Z]+)\)',
+    # Pattern for "X (TICKER) Will Be Available"
+    '\(([A-Z]+)\) Will Be Available',
+    # Pattern for "Introducing X (TICKER)"
+    'Introducing [^(]+\(([A-Z]+)\)',
+    # Pattern for trading pairs like CUDISUSDT, SOMIUSDT, etc. (extract base token)
+    '([A-Z]+)(?:USDT|USDC|BTC|ETH|BNB)(?=\s|$|\)|,)',
+    # Pattern for "USDⓈ-Margined XUSDT"
+    'USDⓈ-Margined ([A-Z]+)(?:USDT|USDC|BTC|ETH|BNB)',
+    '\(([A-Z0-9]+)\) with Seed Tag',
+
+    'Binance Will (?:List|Delist) [a-zA-Z0-9\.]+ \(([A-Z0-9]+)\)',
+
+    'Binance Futures Will Delist USDⓈ-M ([A-Z]+)(?:USDT|USDC|BTC|ETH|BNB)',
+    'Binance Futures Will Delist USDⓈ-M ([A-Z]+)(?:USDT|USDC|BTC|ETH|BNB)\s+and\s+([A-Z]+)(?:USDT|USDC|BTC|ETH|BNB)',
+    'Binance Futures Will Delist USDⓈ-M ([A-Z]+)(?:USDT|USDC|BTC|ETH|BNB)(?:,\s*([A-Z]+)(?:USDT|USDC|BTC|ETH|BNB))*'
+  ]
+
+  categories:
+    - original_ids: ["New Cryptocurrency Listing"]
+      show_name: "New Cryptocurrency Listing"
+      internal_name: "listing_spot"
+    - original_ids: ["Latest Binance News"]
+      show_name: "Latest Binance News"
+      internal_name: "news"
+    - original_ids: ["Latest Activities"]
+      show_name: "Latest Activities"
+      internal_name: "activities"
+    - original_ids: ["New Fiat Listings"]
+      show_name: "New Fiat Listings"
+      internal_name: "other"
+    - original_ids: ["Delisting"]
+      show_name: "Delisting"
+      internal_name: "delisting"
+    - original_ids: ["Maintenance Updates", "API Updates"]
+      show_name: "Maintenance"
+      internal_name: "maintenance"
+    - original_ids: ["Crypto Airdrop"]
+      show_name: "Crypto Airdrop"
+      internal_name: "activities"
